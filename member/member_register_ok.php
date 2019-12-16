@@ -1,0 +1,42 @@
+<?php
+		error_reporting(E_ALL);
+		ini_set("display_errors", 1);
+		session_start();
+		require("../dbcon.php");
+
+		$id=$_POST["user_id"];
+		$name=$_POST["name"];
+		$name = iconv("UTF-8","EUC-KR", $name);
+		$pw1=$_POST["user_pw1"];
+		$pw2=$_POST["user_pw2"];
+		$age=$_POST["age"];
+		$nick=$_POST["nick"];
+		$nick=iconv("UTF-8","EUC-KR", $nick);
+		$email=$_POST["email"];
+
+		
+		if(!$nick) $nick=$name;
+		if(!$age) $age=0;
+
+		$strSQL = "select u_id from member where u_id = '".$id."';";
+		print($strSQL);
+		$rs = mssql_query($strSQL,$conn);
+		$rs_arr = mssql_fetch_array($rs);	
+
+		if($rs_arr){
+			echo "<script>
+				alert('중복 ID!! 회원가입 실패!!');
+				history.back();
+			</script>";
+		}else{
+			$strSQL = "insert into member(u_id, u_pass, u_name, nickname, age, email, reg_date) values('$id', '$pw1', '$name', '$nick', $age, '$email', GETDATE())";			
+			mssql_query($strSQL,$conn);			
+			echo "<script>
+				alert('회원 가입을 축하드립니다!!');
+				location.replace('../index.php');
+			</script>";			
+		}
+		mssql_close($conn);
+		
+?>
+
